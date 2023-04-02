@@ -1,39 +1,47 @@
-import json
+# Arnolds Kumpiņš 9.grupa 221RDB157
 
-# Ielasa JSON datni no faila
-with open('sample1.json') as f:
-    datne = json.load(f)
+class Query:
+    def __init__(self, query):
+        self.type = query[0]
+        self.number = int(query[1])
+        if self.type == 'add':
+            self.name = query[2]
 
-# Pārveido datus par vārdnīcu
-vardnica = dict(datne)
+def read_queries():
+    n = int(input())
+    return [Query(input().split()) for i in range(n)]
 
-# Izvada vārdnīcas garumu
-print(len(vardnica))
+def write_responses(result):
+    print('\n'.join(result))
 
-# Izvada visas vārdnīcas atslēgas
-print(list(vardnica.keys()))
+def process_queries(queries):
+    result = []
+    # Keep list of all existing (i.e. not deleted yet) contacts.
+    contacts = []
+    for cur_query in queries:
+        if cur_query.type == 'add':
+            # if we already have contact with such number,
+            # we should rewrite contact's name
+            for contact in contacts:
+                if contact.number == cur_query.number:
+                    contact.name = cur_query.name
+                    break
+            else: # otherwise, just add it
+                contacts.append(cur_query)
+        elif cur_query.type == 'del':
+            for j in range(len(contacts)):
+                if contacts[j].number == cur_query.number:
+                    contacts.pop(j)
+                    break
+        else:
+            response = 'not found'
+            for contact in contacts:
+                if contact.number == cur_query.number:
+                    response = contact.name
+                    break
+            result.append(response)
+    return result
 
-# Izvada visas vārdnīcas vērtības
-print(list(vardnica.values()))
+if __name__ == '__main__':
+    write_responses(process_queries(read_queries()))
 
-# Ielasīs atslēgu no ievades
-atslega = input('Ievadi atslēgu: ')
-
-# Parbauda, vai atslēga eksistē vārdnīcā un izvada tās vērtību
-if atslega in vardnica:
-    print(vardnica[atslega])
-else:
-    print('Atslēga neeksistē vārdnīcā')
-
-# Definē funkciju, kas izvada vērtību, kura atrodas dotajā atslēgā
-def atslegas_vertiba(datnes_nosaukums, atslega):
-    with open(datnes_nosaukums) as f:
-        datne = json.load(f)
-    vardnica = dict(datne)
-    if atslega in vardnica:
-        print(vardnica[atslega])
-    else:
-        print('Atslēga neeksistē vārdnīcā')
-
-# Izmanto funkciju, lai izvadītu vērtību, kas atrodas dotajā atslēgā
-atslegas_vertiba("sample1.json", "color")
