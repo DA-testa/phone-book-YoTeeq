@@ -1,4 +1,4 @@
-# python3
+# Arnolds Kumpiņš 9.grupa 221RDB157
 
 class Query:
     def __init__(self, query):
